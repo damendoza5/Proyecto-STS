@@ -1,0 +1,16 @@
+Sprint 1
+
+- Epica (Definicion del proyecto a realizar.)
+- User Stories
+    El _______actor________ __________accion__________ para ___________objetivo o valor__________
+
+- Backlog priorizado
+    Story points (1, 2, 3, 5) 1 dia de trabajo
+
+Sprint 2 (14 points)
+
+
+
+Sprint 3 (14 points)
+
+System Demo
