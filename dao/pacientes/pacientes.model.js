@@ -33,6 +33,7 @@ class Pacientes {
     const documents = await cursor.toArray();
     return documents;
   }
+
   async getFaceted(page, items, filter = {}) {
     const cursor = this.collection.find(filter);
     const totalItems = await cursor.count();
@@ -47,6 +48,7 @@ class Pacientes {
       resultados
     };
   }
+
   async getById(id) {
     const _id = new ObjectId(id);
     const filter = {_id};
@@ -57,7 +59,6 @@ class Pacientes {
 
   async updateOne(id, nombres, apellidos, identidad, telefono, correo) {
     const filter = {_id: new ObjectId(id)};
-    // UPDATE PACIENTES SET campo=valor, campo=valor where id= id;
     const updateCmd = {
       '$set':{
         nombres,
@@ -67,6 +68,48 @@ class Pacientes {
         correo
       }
     };
+    return await this.collection.updateOne(filter, updateCmd);
+  }
+
+  async updateAddTag(id, tagEntry){
+    const updateCmd = {
+      "$push": {
+        tags: tagEntry
+      }
+    }
+    const filter = {_id: new ObjectId(id)};
+    return await this.collection.updateOne(filter, updateCmd);
+  }
+
+  async updateAddTagSet(id, tagEntry){
+    const updateCmd = {
+      "$addToSet": {
+        tags: tagEntry
+      }
+    }
+    const filter = {_id: new ObjectId(id)};
+    return await this.collection.updateOne(filter, updateCmd);
+  }
+
+  async updatePopTag(id, tagEntry) {
+    console.log(tagEntry);
+    const updateCmd = [{
+      '$set': {
+        'tags': {
+          '$let': {
+            'vars': { 'ix': { '$indexOfArray': ['$tags', tagEntry] } },
+            'in': {
+              '$concatArrays': [
+                { '$slice': ['$tags', 0, {'$add':[1,'$$ix']}]},
+                [],
+                { '$slice': ['$tags', { '$add': [2, '$$ix'] }, { '$size': '$tags' }] }
+              ]
+            }
+          }
+        }
+      }
+    }];
+    const filter = { _id: new ObjectId(id) };
     return await this.collection.updateOne(filter, updateCmd);
   }
 
