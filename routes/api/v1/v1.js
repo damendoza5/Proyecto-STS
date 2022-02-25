@@ -1,18 +1,26 @@
 const express = require('express');
 const router = express.Router();
-const { verifyApiHeaderToken } = require('./headerVerifyMiddelware')
+const { verifyApiHeaderToken } = require('./headerVerifyMiddleware');
+const {passport, jwtMiddleware} = require('./seguridad/jwtHelper');
 const pacientesRoutes = require('./pacientes/pacientes');
-const expedientesRoutes = require('./expedientes/expedientes');
+const seguridadRoutes = require('./seguridad/seguridad');
+const expedientesRoutes = require('./expedientes/expedientes')
+
+router.use(passport.initialize());
+
+router.use('/seguridad', verifyApiHeaderToken, seguridadRoutes);
 
 router.use(
-    '/pacientes', 
-    verifyApiHeaderToken, 
-    pacientesRoutes
+  '/pacientes',
+  verifyApiHeaderToken,
+  jwtMiddleware,
+  pacientesRoutes
 );
 
 router.use(
     '/expedientes', 
     verifyApiHeaderToken, 
+    jwtMiddleware,
     expedientesRoutes
 );
 
